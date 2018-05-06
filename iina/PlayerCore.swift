@@ -933,6 +933,7 @@ class PlayerCore: NSObject {
     reloadSavedIINAfilters()
     DispatchQueue.main.async {
       Timer.scheduledTimer(timeInterval: TimeInterval(0.2), target: self, selector: #selector(self.reEnableOSDAfterFileLoading), userInfo: nil, repeats: false)
+      Timer.scheduledTimer(timeInterval: TimeInterval(1), target: self, selector: #selector(self.autoSearchOnlineSub), userInfo: nil, repeats: false)
     }
   }
 
@@ -964,6 +965,14 @@ class PlayerCore: NSObject {
   @objc
   private func reEnableOSDAfterFileLoading() {
     info.disableOSDForFileLoading = false
+  }
+
+  @objc
+  private func autoSearchOnlineSub() {
+    if Preference.bool(for: .autoSearchOnlineSub) &&
+      info.videoDuration!.second >= Preference.double(for: .autoSearchThreshold) * 60 {
+      mainWindow.menuActionHandler.menuFindOnlineSub(.dummy)
+    }
   }
 
   /**
